@@ -1,0 +1,26 @@
+{
+    "name": "droid/droid-model",
+    "description": "The Droid Model.",
+    "homepage": "http://www.github.com/droid-php/droid-model",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "LinkORB Engineering",
+            "email": "engineering@linkorb.com",
+            "role": "Development"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Droid\\Model\\": "src/Model"
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "ssh-client/ssh-client": "~0.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    }
+}
