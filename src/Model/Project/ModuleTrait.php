@@ -2,6 +2,8 @@
 
 namespace Droid\Model\Project;
 
+use RuntimeException;
+
 trait ModuleTrait
 {
     private $modules = [];
