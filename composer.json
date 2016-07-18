@@ -18,6 +18,10 @@
     },
     "require": {
         "php": ">=5.4.0",
+        "symfony/serializer": "^3.0",
+        "symfony/property-access": "^3.0",
+        "doctrine/annotations": "^1.2",
+        "doctrine/cache": "^1.6",
         "ssh-client/ssh-client": "~0.1"
     },
     "require-dev": {

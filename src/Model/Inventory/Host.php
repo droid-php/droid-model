@@ -2,6 +2,8 @@
 
 namespace Droid\Model\Inventory;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+
 use Droid\Model\Feature\Firewall\RuleTrait;
 use Droid\Model\Inventory\Remote\AbleInterface;
 use Droid\Model\Inventory\Remote\AbleTrait;
@@ -10,10 +12,22 @@ use Droid\Model\Project\VariableTrait;
 
 class Host implements AbleInterface
 {
+    /**
+     * @Groups({"TemplateData"})
+     */
     private $name;
+    /**
+     * @Groups({"TemplateData"})
+     */
     private $address;
 
+    /**
+     * @Groups({"TemplateData"})
+     */
     private $public_ip;
+    /**
+     * @Groups({"TemplateData"})
+     */
     private $private_ip;
     private $public_port;
     private $private_port;
@@ -42,6 +56,17 @@ class Host implements AbleInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    public function setAddress($address)
+    {
+        $this->address = $address;
+        return $this;
     }
 
     public function getPublicIp()
