@@ -130,7 +130,6 @@ class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @group wip
      * @depends testSyncOccursWhenLocalDroidDiffers
      * @expectedException \Droid\Model\Inventory\Remote\SynchronisationException
      * @expectedExceptionMessage Unable to upload droid
