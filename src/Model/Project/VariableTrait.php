@@ -2,14 +2,9 @@
 
 namespace Droid\Model\Project;
 
-use Symfony\Component\Serializer\Annotation\Groups;
-
 trait VariableTrait
 {
-    /**
-     * @Groups({"TemplateData"})
-     */
-    protected $variables = [];
+    public $variables = [];
 
     public function setVariable($name, $value)
     {

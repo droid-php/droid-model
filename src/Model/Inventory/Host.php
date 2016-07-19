@@ -2,8 +2,6 @@
 
 namespace Droid\Model\Inventory;
 
-use Symfony\Component\Serializer\Annotation\Groups;
-
 use Droid\Model\Feature\Firewall\RuleTrait;
 use Droid\Model\Inventory\Remote\AbleInterface;
 use Droid\Model\Inventory\Remote\AbleTrait;
@@ -12,25 +10,12 @@ use Droid\Model\Project\VariableTrait;
 
 class Host implements AbleInterface
 {
-    /**
-     * @Groups({"TemplateData"})
-     */
-    private $name;
-    /**
-     * @Groups({"TemplateData"})
-     */
-    private $address;
-
-    /**
-     * @Groups({"TemplateData"})
-     */
-    private $public_ip;
-    /**
-     * @Groups({"TemplateData"})
-     */
-    private $private_ip;
-    private $public_port;
-    private $private_port;
+    public $name;
+    public $address;
+    public $public_ip;
+    public $private_ip;
+    public $public_port;
+    public $private_port;
 
     private $username;
     private $password;
@@ -58,59 +43,85 @@ class Host implements AbleInterface
         return $this->name;
     }
 
+    /**
+     * @deprecated Use instead the public property 'address'.
+     */
     public function getAddress()
     {
         return $this->address;
     }
 
+    /**
+     * @deprecated Use instead the public property 'address'.
+     */
     public function setAddress($address)
     {
         $this->address = $address;
         return $this;
     }
 
+    /**
+     * @deprecated Use instead the public property 'public_ip'.
+     */
     public function getPublicIp()
     {
-        if (!$this->public_ip) {
-            return gethostbyname($this->getName());
-        }
         return $this->public_ip;
     }
 
+    /**
+     * @deprecated Use instead the public property 'public_ip'.
+     */
     public function setPublicIp($ip)
     {
         $this->public_ip = $ip;
         return $this;
     }
 
+    /**
+     * @deprecated Use instead the public property 'private_ip'.
+     */
     public function getPrivateIp()
     {
         return $this->private_ip;
     }
 
+    /**
+     * @deprecated Use instead the public property 'private_ip'.
+     */
     public function setPrivateIp($ip)
     {
         $this->private_ip = $ip;
         return $this;
     }
 
+    /**
+     * @deprecated Use instead the public property 'public_port'.
+     */
     public function getPublicPort()
     {
         return $this->public_port;
     }
 
+    /**
+     * @deprecated Use instead the public property 'public_port'.
+     */
     public function setPublicPort($port)
     {
         $this->public_port = $port;
         return $this;
     }
 
-
+    /**
+     * @deprecated Use instead the public property 'private_port'.
+     */
     public function getPrivatePort()
     {
         return $this->private_port;
     }
 
+    /**
+     * @deprecated Use instead the public property 'private_port'.
+     */
     public function setPrivatePort($port)
     {
         $this->private_port = $port;
@@ -120,13 +131,13 @@ class Host implements AbleInterface
     public function getConnectionIp()
     {
         // TODO: Allow to use public or private ip
-        return $this->getPublicIp();
+        return $this->public_ip;
     }
 
     public function getConnectionPort()
     {
         // TODO: Allow to use public or private port
-        return $this->getPublicPort();
+        return $this->public_port;
     }
 
     public function getUsername()
