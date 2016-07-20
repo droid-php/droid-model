@@ -12,6 +12,7 @@ class Task
     private $arguments = [];
     private $items = [];
     private $triggers = [];
+    private $host_filter;
 
     public function setArgument($name, $value)
     {
@@ -122,6 +123,29 @@ class Task
     public function setChanged($changed)
     {
         $this->changed = $changed;
+        return $this;
+    }
+
+    /**
+     * Get an expression to use to select a subset of some list of hosts on
+     * which to run the task.
+     *
+     * @return string
+     */
+    public function getHostFilter()
+    {
+        return $this->host_filter;
+    }
+
+    /**
+     * Set an expression to use to select a subset of some list of hosts on
+     * which to run the task.
+     *
+     * @param string $filterExpression
+     */
+    public function setHostFilter($filterExpression)
+    {
+        $this->host_filter = $filterExpression;
         return $this;
     }
 }
