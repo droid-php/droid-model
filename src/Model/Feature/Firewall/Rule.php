@@ -4,12 +4,12 @@ namespace Droid\Model\Feature\Firewall;
 
 class Rule
 {
-
     protected $address;
     protected $port;
     protected $protocol = 'tcp';
     protected $direction = 'inbound';
     protected $action = 'allow';
+    protected $comment = '';
 
     public function getAddress()
     {
@@ -65,4 +65,16 @@ class Rule
         $this->action = $action;
         return $this;
     }
+    
+    public function getComment()
+    {
+        return $this->comment;
+    }
+    
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+        return $this;
+    }
+    
 }
