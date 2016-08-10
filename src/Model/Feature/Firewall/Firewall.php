@@ -51,7 +51,7 @@ class Firewall
     {
         switch ($address) {
             case 'all':
-                return ['0.0.0.0/32'];
+                return ['0.0.0.0/0'];
         }
         $part = explode('.', $address);
         if (count($part)==4) {
