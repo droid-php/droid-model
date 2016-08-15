@@ -5,9 +5,10 @@ namespace Droid\Model\Feature\Firewall;
 use Droid\Model\Inventory\Inventory;
 use RuntimeException;
 
-class Firewall
+class Firewall implements FirewallInterface
 {
     protected $inventory;
+
     public function __construct(Inventory $inventory)
     {
         $this->inventory = $inventory;
