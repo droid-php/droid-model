@@ -9,4 +9,11 @@ interface FirewallInterface
     public function constructAddresses($address);
 
     public function constructAddress($address);
+
+    /**
+     * Get the firewall policy.
+     *
+     * @return array
+     */
+    public function getPolicy();
 }
