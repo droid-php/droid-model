@@ -10,6 +10,7 @@ class Task
     private $type = 'task';
     private $commandName;
     private $arguments = [];
+    private $itemFilter;
     private $items = [];
     private $triggers = [];
     private $host_filter;
@@ -74,6 +75,26 @@ class Task
         return $this;
     }
 
+    /**
+     * Get an expression by which to select a subset of Task.items.
+     *
+     * @return string
+     */
+    public function getItemFilter()
+    {
+        return $this->itemFilter;
+    }
+
+    /**
+     * Set an expression by which to select a subset of Task.items.
+     *
+     * @param string $filterExpression
+     */
+    public function setItemFilter($filterExpression)
+    {
+        $this->itemFilter = $filterExpression;
+        return $this;
+    }
 
     public function setItems($items)
     {
