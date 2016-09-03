@@ -2,12 +2,14 @@
 
 namespace Droid\Model\Project;
 
+use InvalidArgumentException;
 use RuntimeException;
 
 class Task
 {
     private $arguments = [];
     private $commandName;
+    private $elevatePrivileges;
     private $host_filter;
     private $hosts;
     private $itemFilter;
@@ -166,6 +168,35 @@ class Task
     public function setHostFilter($filterExpression)
     {
         $this->host_filter = $filterExpression;
+        return $this;
+    }
+
+    /**
+     * Determine whether or not the command associated with this Task should be
+     * executed with elevated privileges.
+     *
+     * @return boolean
+     */
+    public function getElevatePrivileges()
+    {
+        return $this->elevatePrivileges === true;
+    }
+
+    /**
+     * Direct the Task as to whether or not to execute its associated command
+     * with elevated privileges.
+     *
+     * @param boolean $elevatePrivileges
+     */
+    public function setElevatePrivileges($elevatePrivileges)
+    {
+        if (! is_bool($elevatePrivileges)) {
+            throw new InvalidArgumentException(
+                'Expected boolean $elevatePrivileges argument'
+            );
+        }
+
+        $this->elevatePrivileges = $elevatePrivileges;
         return $this;
     }
 }
