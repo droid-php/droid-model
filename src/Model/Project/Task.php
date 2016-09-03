@@ -6,14 +6,17 @@ use RuntimeException;
 
 class Task
 {
-    private $name;
-    private $type = 'task';
-    private $commandName;
     private $arguments = [];
+    private $commandName;
+    private $host_filter;
+    private $hosts;
     private $itemFilter;
     private $items = [];
+    private $name;
     private $triggers = [];
-    private $host_filter;
+    private $type = 'task';
+
+    protected $changed = false;
 
     public function setArgument($name, $value)
     {
@@ -111,8 +114,6 @@ class Task
         return $this->items;
     }
 
-    private $hosts;
-
     public function getHosts()
     {
         return $this->hosts;
@@ -133,8 +134,6 @@ class Task
     {
         return $this->triggers;
     }
-
-    protected $changed = false;
 
     public function getChanged()
     {
