@@ -7,15 +7,16 @@ use Droid\Model\Inventory\Remote\Enabler;
 use Droid\Model\Inventory\Remote\SynchronisationException;
 use Droid\Model\Inventory\Remote\SynchroniserInterface;
 
-use SSHClient\Client\ClientInterface;
+use Droid\Model\Inventory\Remote\Check\HostCheckInterface;
+use Droid\Model\Inventory\Remote\Check\CheckFailureException;
+use Droid\Model\Inventory\Remote\Check\UnrecoverableCheckFailureException;
 
 class EnablerTest extends \PHPUnit_Framework_TestCase
 {
+    protected $check;
     protected $enabler;
     protected $synchroniser;
     protected $host;
-    protected $sshClient;
-    protected $scpClient;
 
     public function setUp()
     {
@@ -29,24 +30,19 @@ class EnablerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMockForAbstractClass()
         ;
-        $this->sshClient = $this
-            ->getMockBuilder(ClientInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-        $this->scpClient = $this
-            ->getMockBuilder(ClientInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock()
+        $this->check = $this
+            ->getMockBuilder(HostCheckInterface::class)
+            ->getMockForAbstractClass()
         ;
         $this->enabler = new Enabler($this->synchroniser);
+        $this->enabler->addHostCheck($this->check);
     }
 
     /**
      * @expectedException \Droid\Model\Inventory\Remote\EnablementException
-     * @expectedExceptionMessage Unable to check remote PHP version
+     * @expectedExceptionMessage Failure during host check
      */
-    public function testEnableFailsWhenSshExecFails()
+    public function testEnableWithUnrecoverableCheckFailureWillThrowException()
     {
         $this
             ->host
@@ -55,27 +51,15 @@ class EnablerTest extends \PHPUnit_Framework_TestCase
         ;
         $this
             ->host
-            ->expects($this->once())
-            ->method('getSshClient')
-            ->willReturn($this->sshClient)
-        ;
-        $this
-            ->host
-            ->expects($this->once())
             ->method('getName')
             ->willReturn('test_host')
         ;
         $this
-            ->sshClient
+            ->check
             ->expects($this->once())
-            ->method('exec')
-            ->with($this->equalTo(array('php', '-r', '"echo PHP_VERSION_ID;"')))
-        ;
-        $this
-            ->sshClient
-            ->expects($this->once())
-            ->method('getExitCode')
-            ->willReturn(1) # exec failed
+            ->method('check')
+            ->with($this->equalTo($this->host))
+            ->willThrowException(new UnrecoverableCheckFailureException)
         ;
         $this
             ->host
@@ -86,16 +70,12 @@ class EnablerTest extends \PHPUnit_Framework_TestCase
         $this->enabler->enable($this->host);
     }
 
-    /**
-     * @expectedException \Droid\Model\Inventory\Remote\EnablementException
-     * @expectedExceptionMessage version of PHP is too low
-     */
-    public function testEnableFailsWhenPhpVersionTooLow()
+    public function testEnableWithCheckFailureWillContinueEnablement()
     {
         $this
             ->host
-            ->method('getSshClient')
-            ->willReturn($this->sshClient)
+            ->expects($this->once())
+            ->method('unable')
         ;
         $this
             ->host
@@ -103,19 +83,54 @@ class EnablerTest extends \PHPUnit_Framework_TestCase
             ->willReturn('test_host')
         ;
         $this
-            ->sshClient
-            ->method('getExitCode')
-            ->willReturn(0) # exec ok
+            ->check
+            ->expects($this->once())
+            ->method('check')
+            ->with($this->equalTo($this->host))
+            ->willThrowException(new CheckFailureException)
         ;
         $this
-            ->sshClient
+            ->synchroniser
             ->expects($this->once())
-            ->method('getOutput')
-            ->willReturn("50334\n")
+            ->method('sync')
+            ->with($this->equalTo($this->host))
         ;
         $this
             ->host
-            ->expects($this->never())
+            ->expects($this->once())
+            ->method('able')
+        ;
+
+        $this->enabler->enable($this->host);
+    }
+
+    public function testEnableWithPassedCheckWillContinueEnablement()
+    {
+        $this
+            ->host
+            ->expects($this->once())
+            ->method('unable')
+        ;
+        $this
+            ->host
+            ->method('getName')
+            ->willReturn('test_host')
+        ;
+        $this
+            ->check
+            ->expects($this->once())
+            ->method('check')
+            ->with($this->equalTo($this->host))
+        ;
+        $this
+            ->synchroniser
+            ->expects($this->once())
+            ->method('sync')
+            ->with($this->equalTo($this->host))
+        ;
+        $this
+            ->host
+            ->expects($this->once())
             ->method('able')
         ;
 
@@ -126,27 +141,12 @@ class EnablerTest extends \PHPUnit_Framework_TestCase
      * @expectedException \Droid\Model\Inventory\Remote\EnablementException
      * @expectedExceptionMessage Failure during binary synchronisation
      */
-    public function testEnableFailsWhenSynchronisationFails()
+    public function testEnableWithFailedSynchronisationWillThrowException()
     {
-        $this
-            ->host
-            ->method('getSshClient')
-            ->willReturn($this->sshClient)
-        ;
         $this
             ->host
             ->method('getName')
             ->willReturn('test_host')
-        ;
-        $this
-            ->sshClient
-            ->method('getExitCode')
-            ->willReturn(0) # exec ok
-        ;
-        $this
-            ->sshClient
-            ->method('getOutput')
-            ->willReturn("50509\n")
         ;
         $this
             ->synchroniser
@@ -160,41 +160,6 @@ class EnablerTest extends \PHPUnit_Framework_TestCase
         $this
             ->host
             ->expects($this->never())
-            ->method('able')
-        ;
-
-        $this->enabler->enable($this->host);
-    }
-
-    public function testEnableSucceeds()
-    {
-        $this
-            ->host
-            ->method('getSshClient')
-            ->willReturn($this->sshClient)
-        ;
-        $this
-            ->host
-            ->method('getName')
-            ->willReturn('test_host')
-        ;
-        $this
-            ->sshClient
-            ->method('getExitCode')
-            ->willReturn(0) # exec ok
-        ;
-        $this
-            ->sshClient
-            ->method('getOutput')
-            ->willReturn("50509\n")
-        ;
-        $this
-            ->synchroniser
-            ->method('sync')
-        ;
-        $this
-            ->host
-            ->expects($this->once())
             ->method('able')
         ;
 
