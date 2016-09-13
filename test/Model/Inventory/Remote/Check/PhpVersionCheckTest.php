@@ -2,6 +2,7 @@
 
 namespace Droid\Test\Model\Inventory\Remote;
 
+use Psr\Log\LoggerInterface;
 use SSHClient\Client\ClientInterface;
 
 use Droid\Model\Inventory\Remote\AbleInterface;
@@ -11,6 +12,7 @@ class PhpVersionCheckTest extends \PHPUnit_Framework_TestCase
 {
     protected $check;
     protected $host;
+    protected $logger;
     protected $sshClient;
 
     public function setUp()
@@ -20,6 +22,10 @@ class PhpVersionCheckTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMockForAbstractClass()
         ;
+        $this->logger = $this
+            ->getMockBuilder(LoggerInterface::class)
+            ->getMock()
+        ;
         $this->sshClient = $this
             ->getMockBuilder(ClientInterface::class)
             ->disableOriginalConstructor()
@@ -27,6 +33,7 @@ class PhpVersionCheckTest extends \PHPUnit_Framework_TestCase
         ;
 
         $this->check = new PhpVersionCheck;
+        $this->check->setLogger($this->logger);
     }
 
     /**

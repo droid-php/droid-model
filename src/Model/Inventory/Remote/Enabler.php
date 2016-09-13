@@ -2,6 +2,9 @@
 
 namespace Droid\Model\Inventory\Remote;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+
 use Droid\Model\Inventory\Remote\Check\CheckFailureException;
 use Droid\Model\Inventory\Remote\Check\HostCheckInterface;
 use Droid\Model\Inventory\Remote\Check\UnrecoverableCheckFailureException;
@@ -13,8 +16,12 @@ use Droid\Model\Inventory\Remote\Check\UnrecoverableCheckFailureException;
  * on SynchroniserInterface to arrange for droid to be made available on the
  * remote host.
  */
-class Enabler implements EnablerInterface
+class Enabler implements
+    EnablerInterface,
+    LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     protected $hostChecks = array();
     protected $synchroniser;
 
@@ -31,9 +38,16 @@ class Enabler implements EnablerInterface
 
     public function enable(AbleInterface $host)
     {
+        $logContext = array('host' => $host->getName());
+
+        $this->logger->notice('Begin droid enablement.', $logContext);
+
         $host->unable();
 
         foreach ($this->hostChecks as $hostCheck) {
+            if ($hostCheck instanceof LoggerAwareInterface) {
+                $hostCheck->setLogger($this->logger);
+            }
             try {
                 $hostCheck->check($host);
             } catch (UnrecoverableCheckFailureException $e) {
@@ -48,6 +62,10 @@ class Enabler implements EnablerInterface
             }
         }
 
+        if ($this->synchroniser instanceof LoggerAwareInterface) {
+            $this->synchroniser->setLogger($this->logger);
+        }
+
         try {
             $this->synchroniser->sync($host);
         } catch (SynchronisationException $e) {
@@ -60,5 +78,7 @@ class Enabler implements EnablerInterface
         }
 
         $host->able();
+
+        $this->logger->notice('Finished droid enablement. Success.', $logContext);
     }
 }

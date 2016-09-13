@@ -7,7 +7,7 @@ use Droid\Model\Inventory\Remote\AbleInterface;
 /**
  * This check asserts that the version of PHP installed on a Host is sufficient.
  */
-class PhpVersionCheck implements HostCheckInterface
+class PhpVersionCheck extends AbstractHostCheck
 {
     protected $minPhpVersion = 50509;
 
@@ -21,6 +21,16 @@ class PhpVersionCheck implements HostCheckInterface
 
     public function check(AbleInterface $host)
     {
+        $logContext = array(
+            'host' => $host->getName(),
+            'ver' => $this->minPhpVersion,
+        );
+
+        $this->logger->info(
+            'Begin check for minimum PHP version ({ver}).',
+            $logContext
+        );
+
         $ssh = $host->getSshClient();
 
         $ssh->exec(array('php', '-r', '"echo PHP_VERSION_ID;"'));
@@ -43,6 +53,11 @@ class PhpVersionCheck implements HostCheckInterface
                 )
             );
         }
+
+        $this->logger->info(
+            'Finished check for minimum PHP version. Success.',
+            $logContext
+        );
 
         return true;
     }

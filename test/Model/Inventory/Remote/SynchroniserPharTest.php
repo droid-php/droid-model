@@ -2,14 +2,16 @@
 
 namespace Droid\Test\Model\Inventory\Remote;
 
+use Psr\Log\LoggerInterface;
+use SSHClient\Client\ClientInterface;
+
 use Droid\Model\Inventory\Remote\AbleInterface;
 use Droid\Model\Inventory\Remote\SynchroniserPhar;
-
-use SSHClient\Client\ClientInterface;
 
 class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
 {
     protected $host;
+    protected $logger;
     protected $sshClient;
     protected $scpClient;
 
@@ -19,6 +21,10 @@ class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
             ->getMockBuilder(AbleInterface::class)
             ->disableOriginalConstructor()
             ->getMockForAbstractClass()
+        ;
+        $this->logger = $this
+            ->getMockBuilder(LoggerInterface::class)
+            ->getMock()
         ;
         $this->sshClient = $this
             ->getMockBuilder(ClientInterface::class)
@@ -49,6 +55,7 @@ class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
     public function testSyncFailsWhenLocalDroidUnreadable()
     {
         $synchroniser = new SynchroniserPhar('/tmp/not-a-file');
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 
@@ -124,6 +131,7 @@ class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
         ;
 
         $synchroniser = new SynchroniserPhar($localDroidPath);
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
 
         return $localDroidPath;
@@ -179,7 +187,7 @@ class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
         ;
         $this
             ->host
-            ->expects($this->once())
+            ->expects($this->atLeastOnce())
             ->method('getName')
             ->willReturn('test_host')
         ;
@@ -191,6 +199,7 @@ class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
         ;
 
         $synchroniser = new SynchroniserPhar($localDroidPath);
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 
@@ -228,6 +237,7 @@ class SynchroniserPharTest extends \PHPUnit_Framework_TestCase
         ;
 
         $synchroniser = new SynchroniserPhar($localDroidPath);
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 }

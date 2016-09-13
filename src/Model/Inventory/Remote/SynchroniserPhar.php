@@ -9,10 +9,10 @@ namespace Droid\Model\Inventory\Remote;
  * executable to determine whether two versions differ. It uses SSH and Secure
  * Copy clients provided by the Host model.
  */
-class SynchroniserPhar implements SynchroniserInterface
+class SynchroniserPhar extends AbstractSynchroniser
 {
-    protected $localDroidPath;
     protected $droidBinaryName;
+    protected $localDroidPath;
 
     /**
      * @param string $localDroidPath Path to the local droid binary file
@@ -32,16 +32,29 @@ class SynchroniserPhar implements SynchroniserInterface
             );
         }
 
+        $logContext = array('host' => $host->getName());
+
+        $this->logger->info(
+            'Begin synchronising with local droid.phar.',
+            $logContext
+        );
+
         $synchronised = $this->remoteDroidMatches(
             $host,
             $this->getDroidBinaryDigest()
         );
 
         if (! $synchronised) {
+            $this->logger->notice('Uploading droid.phar.', $logContext);
             $this->uploadDroid($host, 300);
         }
 
         $host->setDroidCommandPrefix('php ' . $this->droidBinaryName);
+
+        $this->logger->info(
+            'Finished synchronising with local droid.phar.',
+            $logContext
+        );
     }
 
     private function getDroidBinaryDigest()

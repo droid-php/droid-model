@@ -10,7 +10,7 @@ namespace Droid\Model\Inventory\Remote;
  * directory if necessary. It uses SSH and Secure Copy clients provided by the
  * Host model.
  */
-class SynchroniserComposer implements SynchroniserInterface
+class SynchroniserComposer extends AbstractSynchroniser
 {
     const TIMEOUT_MAX_RUNTIME_COMPOSER_INSTALL = 180;
 
@@ -32,10 +32,22 @@ class SynchroniserComposer implements SynchroniserInterface
                 'Path to local composer files is missing.'
             );
         }
+
+        $logContext = array('host' => $host->getName());
+
+        $this->logger->info(
+            'Begin synchronising with local droid, using composer.',
+            $logContext
+        );
+
         $this->uploadComposerFiles($host);
         $this->executeComposerInstall($host);
-
         $host->setDroidCommandPrefix('php vendor/bin/droid');
+
+        $this->logger->info(
+            'Finished synchronising with local droid.',
+            $logContext
+        );
     }
 
     private function uploadComposerFiles($host, $timeout = null)

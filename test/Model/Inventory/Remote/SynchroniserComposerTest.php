@@ -2,6 +2,7 @@
 
 namespace Droid\Test\Model\Inventory\Remote;
 
+use Psr\Log\LoggerInterface;
 use SSHClient\Client\ClientInterface;
 
 use Droid\Model\Inventory\Remote\AbleInterface;
@@ -10,6 +11,7 @@ use Droid\Model\Inventory\Remote\SynchroniserComposer;
 class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
 {
     protected $host;
+    protected $logger;
     protected $sshClient;
     protected $scpClient;
 
@@ -19,6 +21,10 @@ class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
             ->getMockBuilder(AbleInterface::class)
             ->disableOriginalConstructor()
             ->getMockForAbstractClass()
+        ;
+        $this->logger = $this
+            ->getMockBuilder(LoggerInterface::class)
+            ->getMock()
         ;
         $this->sshClient = $this
             ->getMockBuilder(ClientInterface::class)
@@ -79,6 +85,7 @@ class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
             ->willReturn(2)
         ;
         $synchroniser = new SynchroniserComposer('path/to');
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 
@@ -122,6 +129,7 @@ class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
             ->willReturnOnConsecutiveCalls(0, 2)
         ;
         $synchroniser = new SynchroniserComposer('path/to');
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 
@@ -187,6 +195,7 @@ class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
         ;
 
         $synchroniser = new SynchroniserComposer('path/to');
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 
@@ -257,6 +266,7 @@ class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
         ;
 
         $synchroniser = new SynchroniserComposer('path/to');
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 
@@ -329,6 +339,7 @@ class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
         ;
 
         $synchroniser = new SynchroniserComposer('path/to');
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 
@@ -395,6 +406,7 @@ class SynchroniserComposerTest extends \PHPUnit_Framework_TestCase
         ;
 
         $synchroniser = new SynchroniserComposer('path/to');
+        $synchroniser->setLogger($this->logger);
         $synchroniser->sync($this->host);
     }
 }
