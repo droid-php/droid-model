@@ -7,6 +7,8 @@ use RuntimeException;
 
 class Task
 {
+    const RUNTIME_MAX = 60;
+
     private $arguments = [];
     private $commandName;
     private $elevatePrivileges;
@@ -14,6 +16,7 @@ class Task
     private $hosts;
     private $itemFilter;
     private $items = [];
+    private $maxRuntime;
     private $name;
     private $triggers = [];
     private $type = 'task';
@@ -197,6 +200,37 @@ class Task
         }
 
         $this->elevatePrivileges = $elevatePrivileges;
+        return $this;
+    }
+
+    /**
+     * Get the maximum runtime, in seconds. A value of zero is meant to be
+     * construed as unlimited runtime.
+     *
+     * @return integer
+     */
+    public function getMaxRuntime()
+    {
+        return $this->maxRuntime !== null
+            ? $this->maxRuntime
+            : self::RUNTIME_MAX
+        ;
+    }
+
+    /**
+     * Set the maximum runtime, in seconds.
+     *
+     * @param integer $maxRuntime
+     */
+    public function setMaxRuntime($maxRuntime)
+    {
+        if (! is_numeric($maxRuntime)) {
+            throw new InvalidArgumentException(
+                'Expected numeric $$maxRuntime argument'
+            );
+        }
+
+        $this->maxRuntime = (int) $maxRuntime;
         return $this;
     }
 }
