@@ -34,7 +34,7 @@ class Host implements AbleInterface
         $this->address = $name;
         $this->public_port = 22;
         $this->private_port = 22;
-        $this->username = 'root';
+        $this->username = null;
         $this->auth = 'agent';
     }
 
