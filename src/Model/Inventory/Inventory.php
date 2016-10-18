@@ -81,4 +81,23 @@ class Inventory
         }
         return $hosts;
     }
+
+    /**
+     * Get the groups of which the supplied host is a member.
+     *
+     * @param Host $host
+     *
+     * @return HostGroup[] List of zero or more HostGroup
+     */
+    public function getHostGroupsByHost(Host $host)
+    {
+        return array_values(
+            array_filter(
+                $this->hostGroups,
+                function ($g) use ($host) {
+                    return $g->hasHost($host);
+                }
+            )
+        );
+    }
 }

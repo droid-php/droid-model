@@ -2,6 +2,7 @@
 
 namespace Droid\Model\Inventory;
 
+use Droid\Model\Feature\Firewall\PolicyTrait;
 use Droid\Model\Feature\Firewall\RuleTrait;
 use Droid\Model\Inventory\Remote\AbleInterface;
 use Droid\Model\Inventory\Remote\AbleTrait;
@@ -24,6 +25,7 @@ class Host implements AbleInterface
     private $auth;
 
     use AbleTrait;
+    use PolicyTrait;
     use RuleTrait;
     use SshClientTrait;
     use VariableTrait;

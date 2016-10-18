@@ -2,6 +2,7 @@
 
 namespace Droid\Model\Inventory;
 
+use Droid\Model\Feature\Firewall\PolicyTrait;
 use Droid\Model\Feature\Firewall\RuleTrait;
 use Droid\Model\Project\VariableTrait;
 
@@ -10,6 +11,7 @@ class HostGroup
     private $name;
     private $hosts = [];
 
+    use PolicyTrait;
     use RuleTrait;
     use VariableTrait;
 
@@ -32,5 +34,10 @@ class HostGroup
     public function getHosts()
     {
         return $this->hosts;
+    }
+
+    public function hasHost(Host $host)
+    {
+        return array_key_exists($host->getName(), $this->hosts);
     }
 }

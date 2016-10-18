@@ -17,13 +17,11 @@ class Firewall implements FirewallInterface
     public function getRulesByHostname($name)
     {
         $host = $this->inventory->getHost($name);
-        $groups = $this->inventory->getHostGroups();
         $rules = [];
-        foreach ($groups as $group) {
-            if (in_array($host, $group->getHosts())) {
-                foreach ($group->getRules() as $rule) {
-                    $rules[] = $rule;
-                }
+
+        foreach ($this->inventory->getHostGroupsByHost($host) as $group) {
+            foreach ($group->getRules() as $rule) {
+                $rules[] = $rule;
             }
         }
 
@@ -102,8 +100,36 @@ class Firewall implements FirewallInterface
     }
 
     /**
+     * Get the firewall policy for the named host.
+     *
+     * The policy is constructed from the policies defined by any groups of
+     * which the host is a member and the hosts own policy.
+     *
+     * @param string $name Name of a Host.
+     *
+     * @return array
+     */
+    public function getPolicyByHostname($name)
+    {
+        if (! $this->inventory->hasHost($name)) {
+            return array();
+        }
+
+        $policy = array();
+        $host = $this->inventory->getHost($name);
+
+        foreach ($this->inventory->getHostGroupsByHost($host) as $group) {
+            $policy = array_replace_recursive($policy, $group->getFirewallPolicy());
+        }
+
+        return array_replace_recursive($policy, $host->getFirewallPolicy());
+    }
+
+    /**
      * Get the firewall policy, as specified by an Inventory variable named
      * "firewall_policy".
+     *
+     * @deprecated
      *
      * @return array
      */

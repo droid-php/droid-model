@@ -11,7 +11,18 @@ interface FirewallInterface
     public function constructAddress($address);
 
     /**
+     * Get the firewall policy of the Host with the supplied hostname.
+     *
+     * @param string $name Name of a Host.
+     *
+     * @return array
+     */
+    public function getPolicyByHostname($name);
+
+    /**
      * Get the firewall policy.
+     *
+     * @deprecated
      *
      * @return array
      */
