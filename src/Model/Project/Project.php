@@ -6,13 +6,12 @@ use RuntimeException;
 
 class Project
 {
-    //private $tasks = [];
+    use VariableTrait;
+    use ModuleTrait;
+
     private $targets = [];
     private $registeredCommands = [];
     private $configFilePath;
-
-    use VariableTrait;
-    use ModuleTrait;
 
     public function __construct($filename)
     {
