@@ -9,6 +9,19 @@ class Project
     use VariableTrait;
     use ModuleTrait;
 
+    /**
+     * The name of the Project.
+     *
+     * @var string
+     */
+    public $name;
+    /**
+     * A description of the Project.
+     *
+     * @var string
+     */
+    public $description;
+
     private $targets = [];
     private $registeredCommands = [];
     private $configFilePath;
