@@ -4,18 +4,22 @@ namespace Droid\Model\Inventory;
 
 use RuntimeException;
 
+use Droid\Model\Project\EnvironmentAwareTrait;
 use Droid\Model\Project\VariableTrait;
 
 class Inventory
 {
+    use EnvironmentAwareTrait;
+    use VariableTrait;
+
     private $hosts = [];
     private $hostGroups = [];
-
-    use VariableTrait;
 
     public function addHost(Host $host)
     {
         $this->hosts[$host->getName()] = $host;
+
+        $this->setDroidIpToPrivateIp($host);
     }
 
     public function getHost($name)
@@ -99,5 +103,31 @@ class Inventory
                 }
             )
         );
+    }
+
+    /*
+     * Environment.droid_use_private_net is used to instruct Droid to connect to
+     * Inventory hosts by their private_ip, so long as the host does not already
+     * have a droid_ip set.
+     */
+    private function setDroidIpToPrivateIp($host)
+    {
+        if ($host->droid_ip
+            || ! $this->getEnvironment()
+            || $this->getEnvironment()->droid_use_private_net !== true
+        ) {
+            return;
+        }
+
+        if (! $host->private_ip) {
+            throw new RuntimeException(
+                sprintf(
+                    'I am unable to add "%s" to the Inventory because it is missing the "private_ip" required by the environment setting "droid_use_private_net".',
+                    $host->getName()
+                )
+            );
+        }
+
+        $host->droid_ip = $host->private_ip;
     }
 }

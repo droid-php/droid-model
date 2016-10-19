@@ -2,8 +2,9 @@
 
 namespace Droid\Model\Feature\Firewall;
 
-use Droid\Model\Inventory\Inventory;
 use RuntimeException;
+
+use Droid\Model\Inventory\Inventory;
 
 class Firewall implements FirewallInterface
 {
@@ -64,14 +65,14 @@ class Firewall implements FirewallInterface
             if (isset($part[1])) {
                 switch ($part[1]) {
                     case 'public':
-                        return [$host->getPublicIp()];
+                        return [$host->public_ip];
                     case 'private':
-                        return [$host->getPrivateIp()];
+                        return [$host->private_ip];
                     default:
                         throw new RuntimeException("Expected public or private: " . $part[1]);
                 }
             } else {
-                return [$host->getPublicIp()];
+                return [$host->public_ip];
             }
         }
 
@@ -82,16 +83,16 @@ class Firewall implements FirewallInterface
                 if (isset($part[1])) {
                     switch ($part[1]) {
                         case 'public':
-                            $res[] = $host->getPublicIp();
+                            $res[] = $host->public_ip;
                             break;
                         case 'private':
-                            $res[] = $host->getPrivateIp();
+                            $res[] = $host->private_ip;
                             break;
                         default:
                             throw new RuntimeException("Expected public or private: " . $part[1]);
                     }
                 } else {
-                    $res[] = $host->getPublicIp();
+                    $res[] = $host->public_ip;
                 }
             }
             return $res;

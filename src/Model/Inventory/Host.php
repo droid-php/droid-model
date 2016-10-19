@@ -13,9 +13,31 @@ class Host implements AbleInterface
 {
     public $name;
     public $address;
+    /**
+     * The IP address by which Droid will connect to this host.
+     *
+     * @var string
+     */
+    public $droid_ip;
+    /**
+     * The port number by which Droid will connect to this host.
+     *
+     * @var number
+     */
+    public $droid_port;
     public $public_ip;
     public $private_ip;
+    /**
+     * @deprecated Use droid_port
+     *
+     * @var number
+     */
     public $public_port;
+    /**
+     * @deprecated Use droid_port
+     *
+     * @var number
+     */
     public $private_port;
 
     private $username;
@@ -132,14 +154,17 @@ class Host implements AbleInterface
 
     public function getConnectionIp()
     {
-        // TODO: Allow to use public or private ip
-        return $this->public_ip;
+        if ($this->droid_ip) {
+            return $this->droid_ip;
+        } elseif ($this->public_ip) {
+            return $this->public_ip;
+        }
+        return $this->private_ip;
     }
 
     public function getConnectionPort()
     {
-        // TODO: Allow to use public or private port
-        return $this->public_port;
+        return $this->droid_port ?: 22;
     }
 
     public function getUsername()
