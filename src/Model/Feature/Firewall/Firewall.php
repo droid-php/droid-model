@@ -127,25 +127,12 @@ class Firewall implements FirewallInterface
     }
 
     /**
-     * Get the firewall policy, as specified by an Inventory variable named
-     * "firewall_policy".
-     *
      * @deprecated
      *
      * @return array
      */
     public function getPolicy()
     {
-        if (! $this->inventory->hasVariable('firewall_policy')) {
-            return array();
-        }
-
-        $policy = $this->inventory->getVariable('firewall_policy');
-
-        if (! is_array($policy)) {
-            return array();
-        }
-
-        return $policy;
+        return array();
     }
 }
