@@ -125,14 +125,4 @@ class Firewall implements FirewallInterface
 
         return array_replace_recursive($policy, $host->getFirewallPolicy());
     }
-
-    /**
-     * @deprecated
-     *
-     * @return array
-     */
-    public function getPolicy()
-    {
-        return array();
-    }
 }
