@@ -5,12 +5,10 @@ namespace Droid\Model\Inventory;
 use RuntimeException;
 
 use Droid\Model\Project\EnvironmentAwareTrait;
-use Droid\Model\Project\VariableTrait;
 
 class Inventory
 {
     use EnvironmentAwareTrait;
-    use VariableTrait;
 
     private $hosts = [];
     private $hostGroups = [];

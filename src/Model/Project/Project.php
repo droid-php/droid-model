@@ -23,7 +23,6 @@ class Project
     public $description;
 
     private $targets = [];
-    private $registeredCommands = [];
     private $configFilePath;
 
     public function __construct($filename)
@@ -42,16 +41,6 @@ class Project
     public function getBasePath()
     {
         return dirname($this->configFilePath);
-    }
-
-    public function addRegisteredCommand(RegisteredCommand $registeredCommand)
-    {
-        $this->registeredCommands[] = $registeredCommand;
-    }
-
-    public function getRegisteredCommands()
-    {
-        return $this->registeredCommands;
     }
 
     public function addTarget(Target $target)

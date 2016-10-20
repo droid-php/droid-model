@@ -32,10 +32,14 @@ trait VariableTrait
 
     public function getVariablesAsString()
     {
-        $string = '';
-        foreach ($this->getVariables() as $name => $value) {
-            $string .= ' ' . $name . '=`' . $value . '`';
+        $pairs = array();
+        foreach ($this->variables as $name => $value) {
+            $pairs[] = sprintf(
+                '%s=`%s`',
+                $name,
+                is_array($value) ? '{...}' : $value
+            );
         }
-        return trim($string);
+        return implode(' ', $pairs);
     }
 }

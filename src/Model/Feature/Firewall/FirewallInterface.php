@@ -18,13 +18,4 @@ interface FirewallInterface
      * @return array
      */
     public function getPolicyByHostname($name);
-
-    /**
-     * Get the firewall policy.
-     *
-     * @deprecated
-     *
-     * @return array
-     */
-    public function getPolicy();
 }
