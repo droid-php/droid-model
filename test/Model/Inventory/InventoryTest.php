@@ -135,4 +135,137 @@ class InventoryTest extends PHPUnit_Framework_TestCase
 
         $inventory->addHost($host);
     }
+
+    /**
+     * @dataProvider singleNameExpressionProvider
+     * @param string $nameExpression
+     * @param array $hosts
+     * @param array $groups
+     * @param array $expectedNames
+     */
+    public function testGetHostNameWithSingleNameWillReturnNamedHostOrHostsOfNamedGroup(
+        $nameExpression,
+        $hosts,
+        $groups,
+        $expectedNames
+    ) {
+        $inventory = new Inventory;
+
+        $this->populateInventory($inventory, $hosts, $groups);
+
+        $this->assertSame(
+            $expectedNames,
+            array_keys($inventory->getHostsByName($nameExpression))
+        );
+    }
+
+    public function singleNameExpressionProvider()
+    {
+        return array(
+            array(
+                'Empty name' => '',
+                array(),
+                array(),
+                array(),
+            ),
+            array(
+                'Trimmed empty name' => '   ',
+                array(),
+                array(),
+                array(),
+            ),
+            array(
+                'Trimmed empty name with commas' => ' ,, ,  ',
+                array(),
+                array(),
+                array(),
+            ),
+            array(
+                'Single host name' => 'some-host',
+                array('some-host', 'some-other-host'),
+                array(),
+                array('some-host'),
+            ),
+            array(
+                'Trimmed single host name' => '    some-host       ',
+                array('some-host', 'some-other-host'),
+                array(),
+                array('some-host'),
+            ),
+            array(
+                'Single group name' => 'some-group',
+                array('some-host1', 'some-host2', 'some-other-host'),
+                array(
+                    'some-group' => array('some-host1', 'some-host2'),
+                    'some-other-group' => array('some-other-host'),
+                ),
+                array('some-host1', 'some-host2'),
+            ),
+        );
+    }
+
+    /**
+     * @dataProvider mooltiNameExpressionProvider
+     * @param string $nameExpression
+     * @param array $hosts
+     * @param array $groups
+     * @param array $expectedNames
+     */
+    public function testGetHostNameWithMultpleNameWillReturnNamedHostOrHostsOfNamedGroup(
+        $nameExpression,
+        $hosts,
+        $groups,
+        $expectedNames
+    ) {
+        $inventory = new Inventory;
+
+        $this->populateInventory($inventory, $hosts, $groups);
+
+        $this->assertSame(
+            $expectedNames,
+            array_keys($inventory->getHostsByName($nameExpression))
+        );
+    }
+
+    public function mooltiNameExpressionProvider()
+    {
+        return array(
+            'Space separated host names' => array(
+                'some-host some-other-host',
+                array('some-host', 'some-other-host'),
+                array(),
+                array('some-host', 'some-other-host'),
+            ),
+            'Trimmed comma separated names' => array(
+                ' some-host ,, , some-other-host ',
+                array('some-host', 'some-other-host'),
+                array(),
+                array('some-host', 'some-other-host'),
+            ),
+            array(
+                'Space separated list of host and group names' => 'some-group some-other-host',
+                array('some-host1', 'some-host2', 'some-other-host'),
+                array(
+                    'some-group' => array('some-host1', 'some-host2'),
+                    'some-other-group' => array('some-other-host'),
+                ),
+                array('some-host1', 'some-host2', 'some-other-host'),
+            ),
+        );
+    }
+
+    private function populateInventory($inventory, $hosts, $groups)
+    {
+        foreach ($hosts as $name) {
+            $inventory->addHost(new Host($name));
+        }
+
+        foreach ($groups as $groupname => $hosts) {
+            $group = new HostGroup($groupname);
+            $inventory->addHostGroup($group);
+            foreach ($hosts as $name) {
+                $group->addHost($inventory->getHost($name));
+            }
+        }
+    }
 }

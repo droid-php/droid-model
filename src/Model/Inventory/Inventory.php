@@ -61,24 +61,28 @@ class Inventory
         return $this->hostGroups;
     }
 
-    public function getHostsByName($name)
+    public function getHostsByName($nameExpression)
     {
-        $name = str_replace(' ', ',', $name);
-        $names = explode(",", $name);
         $hosts = [];
+        $names = array_filter(
+            array_map(
+                function ($x) {
+                    return trim($x);
+                },
+                explode(',', str_replace(' ', ',', $nameExpression))
+            ),
+            'strlen'
+        );
         foreach ($names as $name) {
-            if ($name) {
-                $found = false;
-                if ($this->hasHostGroup($name)) {
-                    foreach ($this->getHostGroup($name)->getHosts() as $host) {
-                        $hosts[$host->getName()] = $host;
-                    }
-                } elseif ($this->hasHost($name)) {
-                    $host = $this->getHost($name);
+            if ($this->hasHostGroup($name)) {
+                foreach ($this->getHostGroup($name)->getHosts() as $host) {
                     $hosts[$host->getName()] = $host;
-                } else {
-                    throw new RuntimeException("Unknown host (group): " . $name);
                 }
+            } elseif ($this->hasHost($name)) {
+                $host = $this->getHost($name);
+                $hosts[$host->getName()] = $host;
+            } else {
+                throw new RuntimeException("Unknown host (group): " . $name);
             }
         }
         return $hosts;
