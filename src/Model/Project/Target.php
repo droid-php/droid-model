@@ -2,9 +2,12 @@
 
 namespace Droid\Model\Project;
 
+use RuntimeException;
+
 class Target
 {
     private $name;
+    private $arguments = [];
 
     use VariableTrait;
     use TaskTrait;
@@ -31,5 +34,29 @@ class Target
     {
         $this->hosts = $hosts;
         return $this;
+    }
+    
+    public function addArgument(TargetArgument $targetArgument)
+    {
+        $this->arguments[$targetArgument->getName()] = $targetArgument;
+        return $this;
+    }
+    
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+    
+    public function hasArgument($name)
+    {
+        return isset($this->arguments[$name]);
+    }
+    
+    public function getArgument($name)
+    {
+        if (!$this->hasArgument($name)) {
+            throw new RuntimeException("No such argument: " . $name);
+        }
+        return $this->arguments[$name];
     }
 }
