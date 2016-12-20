@@ -9,6 +9,7 @@ class Rule
     protected $protocol = 'tcp';
     protected $direction = 'inbound';
     protected $action = 'allow';
+    protected $custom = null;
     protected $comment = '';
 
     public function getAddress()
@@ -63,6 +64,17 @@ class Rule
     public function setAction($action)
     {
         $this->action = $action;
+        return $this;
+    }
+    
+    public function getCustom()
+    {
+        return $this->custom;
+    }
+
+    public function setCustom($custom)
+    {
+        $this->custom = $custom;
         return $this;
     }
 
